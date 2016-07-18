@@ -22,6 +22,28 @@ class Game(ndb.Model):
     winner = ndb.KeyProperty()
     game_history = ndb.PickleProperty(required=True)
 
+    @classmethod
+    def new_game(cls, user_a, user_b):
+        """Creates and returns a new game"""
+        game = Game(user_a=user_a,
+                    user_b=user_b,
+                    next_move=user_a)
+        game.user_a_board = ['' for i in range(100)]
+        game.user_b_board = ['' for i in range(100)]
+        game.game_history = []
+        game.put()
+        return game
+
+    def to_form(self):
+        """Returns GameForm representation of Game"""
+        form = GameForm(urlsafe_key=self.key.urlsafe(),
+                        user_a=self.user_a.get().name,
+                        user_b=self.user_b.get().name,
+                        game_over=self.game_over,
+                        next_move=self.next_move.get().name,
+                        user_a_board=str(self.user_a_board),    # printing out the users board with
+                        user_b_board=str(self.user_b_board))    # ship placements for testing purpose
+
 
 class GameForm(messages.Message):
     """GameForm for outbound game state information"""
