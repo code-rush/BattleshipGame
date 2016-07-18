@@ -41,5 +41,17 @@ class BattleShipAPI(remote.Service):
             raise endpoints.NotFoundException('Game not found!')
 
 
+    @endpoints.method(USER_REQUEST, )
+    def new_game(self, request):
+        """Creates new game"""
+        user_a = User.query(User.name == User.request.name).get()
+        user_b = User.query(User.name == User.request.name).get()
+        if not user_a and user_b:
+            raise endpoints.NotFoundException('One of the users does not exist!')
+
+        game = Game.new_game(user_a.key, user_b.key)
+        return game
+
+
 
 api = endpoints.api_server([BattleShipAPI])
