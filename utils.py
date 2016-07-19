@@ -7,7 +7,7 @@ def get_by_urlsafe(urlsafe, model):
     except TypeError:
         raise endpoints.BadRequestException('Invalid Key')
     except Exception, e:
-        if e.__class__.__name__ = 'ProtocolBufferDecodeError':
+        if e.__class__.__name__ == 'ProtocolBufferDecodeError':
             raise endpoints.BadRequestException('Invalid Key')
         else:
             raise

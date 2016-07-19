@@ -24,11 +24,11 @@ class BattleShipAPI(remote.Service):
     def create_user(self, request):
         """Creates a user"""
         if User.query(User.name == request.user_name).get():
-            raise endpoints.ConflictException('A user with that name \
-                    already exists!')
+            raise endpoints.ConflictException(
+                        'A user with that name already exists!')
         user = User(name=request.user_name, email=request.email)
         user.put()
-        return user
+        return StringMessage(message='User {} successfully created!'.format(request.user_name))
 
     @endpoints.method(GET_GAME_REQUEST, GameForm, name='get_game',
                       path='game/{urlsafe_game_key}', http_method='GET')
@@ -41,19 +41,23 @@ class BattleShipAPI(remote.Service):
             raise endpoints.NotFoundException('Game not found!')
 
 
-    @endpoints.method(USER_REQUEST, GameForm, name='new_game',
+    @endpoints.method(NEW_GAME_REQUEST, GameForm, name='new_game',
                       path='game', http_method='POST')
     def new_game(self, request):
         """Creates new game"""
-        user_a = User.query(User.name == User.request.name).get()
-        user_b = User.query(User.name == User.request.name).get()
+        user_a = User.query(User.name == request.user_a).get()
+        user_b = User.query(User.name == request.user_b).get()
         if not user_a and user_b:
             raise endpoints.NotFoundException('One of the users does not exist!')
 
         game = Game.new_game(user_a.key, user_b.key)
-        return game
+        return game.to_form()
 
-    
+
+    # @endpoints.method()
+    # def place_ships_on_board(self, request):
+    #     """Places ships on board for both users in game"""
+
 
 
 

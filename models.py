@@ -9,7 +9,7 @@ class User(ndb.Model):
     email = ndb.StringProperty(required=True)
     wins = ndb.IntegerProperty(default=0)
     games_played = ndb.IntegerProperty(default=0)
-    board = ndb.PickleProperty()
+    # board = ndb.PickleProperty()
 
 class Game(ndb.Model):
     """Game Object"""
@@ -43,6 +43,9 @@ class Game(ndb.Model):
                         next_move=self.next_move.get().name,
                         user_a_board=str(self.user_a_board),    # printing out the users board with
                         user_b_board=str(self.user_b_board))    # ship placements for testing purpose
+        if self.winner:
+            form.winner = self.winner.get().name
+        return form
 
 
 class GameForm(messages.Message):
