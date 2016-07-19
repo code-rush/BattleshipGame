@@ -41,7 +41,8 @@ class BattleShipAPI(remote.Service):
             raise endpoints.NotFoundException('Game not found!')
 
 
-    @endpoints.method(USER_REQUEST, )
+    @endpoints.method(USER_REQUEST, GameForm, name='new_game',
+                      path='game', http_method='POST')
     def new_game(self, request):
         """Creates new game"""
         user_a = User.query(User.name == User.request.name).get()
@@ -51,6 +52,8 @@ class BattleShipAPI(remote.Service):
 
         game = Game.new_game(user_a.key, user_b.key)
         return game
+
+    
 
 
 
