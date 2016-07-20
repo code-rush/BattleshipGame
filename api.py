@@ -255,7 +255,7 @@ class BattleShipAPI(remote.Service):
                           name='get_game_history',
                           path='game/{urlsafe_game_key}/{user}/history')
         def get_game_history(self, request):
-            game = get_by_urlsafe(urlsafe_game_key, Game)
+            game = get_by_urlsafe(request.urlsafe_game_key, Game)
             user = User.query(User.name = request.user_name).get()
             if not game:
                 raise endpoints.NotFoundException('Game not found')
