@@ -4,7 +4,7 @@ from google.appengine.ext import ndb
 from models import User, Game
 from models import UserForm, GameForm, UserForms, GameForms, PlaceShipsForm
 from models import StringMessage, MakeMoveForm, NewGameForm
-from utils import get_by_urlsafe
+from utils import get_by_urlsafe, check_full_ship_revealed, check_winner
 
 
 NEW_GAME_REQUEST = endpoints.ResourceContainer(NewGameForm)
@@ -105,7 +105,7 @@ class BattleShipAPI(remote.Service):
             if i in SHIP4A or i in SHIP2A or i in SHIP3A:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your ships overlap')
-            game.user_a_board[i] = 'A1'
+            game.user_a_shipsboard[i] = 'A1'
 
 
         position_ship_2_a = request.ship_2_a
@@ -124,7 +124,7 @@ class BattleShipAPI(remote.Service):
             if i in SHIP1A or i in SHIP4A or i in SHIP3A:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your ships overlap')
-            game.user_a_board[i] = 'A2'
+            game.user_a_shipsboard[i] = 'A2'
 
 
         position_ship_3_a = request.ship_3_a
@@ -146,7 +146,7 @@ class BattleShipAPI(remote.Service):
             if i in SHIP1A or i in SHIP2A or i in SHIP4A:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your ships overlap')
-            game.user_a_board[i] = 'A3'
+            game.user_a_shipsboard[i] = 'A3'
 
 
         position_ship_4_a = request.ship_4_a
@@ -166,7 +166,7 @@ class BattleShipAPI(remote.Service):
             if i in SHIP1A or i in SHIP2A or i in SHIP3A:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your ships overlap')
-            game.user_a_board[i] = 'A4'
+            game.user_a_shipsboard[i] = 'A4'
 
 
 
@@ -187,7 +187,7 @@ class BattleShipAPI(remote.Service):
             if i in SHIP3B or i in SHIP2B or i in SHIP4B:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your ships overlap')
-            game.user_b_board[i] = 'B1'
+            game.user_b_shipsboard[i] = 'B1'
 
         position_ship_2_b = request.ship_2_b
         if position_ship_2_b < 0 or position_ship_2_b > 99:
@@ -205,7 +205,7 @@ class BattleShipAPI(remote.Service):
             if i in SHIP1B or i in SHIP3B or i in SHIP4B:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your ships overlap')
-            game.user_b_board[i] = 'B2'
+            game.user_b_shipsboard[i] = 'B2'
 
 
         position_ship_3_b = request.ship_3_b
@@ -225,7 +225,7 @@ class BattleShipAPI(remote.Service):
             if i in SHIP1B or i in SHIP2B or i in SHIP4B:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your ships overlap')
-            game.user_b_board[i] = 'B3'
+            game.user_b_shipsboard[i] = 'B3'
 
 
         position_ship_4_b = request.ship_4_b
@@ -245,7 +245,7 @@ class BattleShipAPI(remote.Service):
             if i in SHIP1B or i in SHIP2B or i in SHIP2B:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your ships overlap')
-            game.user_b_board[i] = 'B4'
+            game.user_b_shipsboard[i] = 'B4'
 
         
         game.put()
@@ -263,9 +263,9 @@ class BattleShipAPI(remote.Service):
             if user.key != game.user_a and user.key != game.user_b:
                 raise endpoints.BadRequestException('User is not in this game')
             if user.key == game.user_a:
-                return StringMessage(message=str(game.user_a_game_history))
+                return StringMessage(message=str(game.user_a_playboard))
             else:
-                return StringMessage(message=str(game.user_b_game_history))
+                return StringMessage(message=str(game.user_b_playboard))
 
         
         @endpoints.method(GET_GAME_REQUEST, StringMessage, name='cancel_game',
@@ -280,6 +280,113 @@ class BattleShipAPI(remote.Service):
                 return StringMessage(message='Game deleted!')
             else:
                 raise endpoints.NotFoundException('Game not found')
+
+
+        @endpoints.method(USER_REQUEST, GameForms, name='get_user_games',
+                          path='user/games', http_method='GET')
+        def get_user_games(self, request):
+            user = User.query(User.name == request.user_name).get()
+            if not user:
+                raise endpoints.BadRequestException(
+                        'User with that name does not exist!')
+            games = Game.query(ndb.OR(Game.user_a == user.key
+                                     Game.user_b == user.key)).\
+                        filter(Game.game_over == False)
+            return GameForms(items=[game.to_form() for game in games])
+
+
+        @endpoints.method(MAKE_MOVE_REQUEST, GameForm, name='make_move'
+                          path='game/{urlsafe_game_key}', http_method='POST')
+        def make_move(self, request):
+            game = get_by_urlsafe(request.urlsafe_game_key, Game)
+            if not game:
+                raise endpoints.NotFoundException('Game not found')
+            if game.game_over:
+                raise endpoints.NotFoundException('Game already over')
+
+            user = User.query(User.name == request.user_name).get()
+            if user.key != game.next_move:
+                raise endpoints.BadRequestException('Its not your turn!')
+
+            move = request.move
+            if move < 0 or move > 99:
+                raise endpoints.BadRequestException('Invalid move! Must be\
+                            0 and 99')
+
+            if user.key == game.user_a:
+                if game.user_a_playboard[move] != '':
+                    raise endpoints.BadRequestException('Invalid move!')
+
+                if move in SHIP1B or move in SHIP2B or move in SHIP3B or move in SHIP4B:
+                    game.user_a_playboard[move] = 'O'
+                else:
+                    game.user_a_playboard[move] = 'X'
+
+                ship1_revealed = check_full_ship_revealed(user_a_playboard, SHIP1B)
+                ship2_revealed = check_full_ship_revealed(user_a_playboard, SHIP2B)
+                ship3_revealed = check_full_ship_revealed(user_a_playboard, SHIP3B)
+                ship4_revealed = check_full_ship_revealed(user_a_playboard, SHIP4B)
+
+                if ship1_revealed:
+                    for i in SHIP1B:
+                        game.user_a_playboard[i] = "B1"
+
+                if ship2_revealed:
+                    for i in SHIP2B:
+                        game.user_a_playboard[i] = "B2"
+
+                if ship3_revealed:
+                    for i in SHIP3B:
+                        game.user_a_playboard[i] = "B3"
+
+                if ship4_revealed:
+                    for i in SHIP4B:
+                        game.user_a_playboard[i] = "B4"
+
+
+            else:
+                if game.user_b_playboard[move] != '':
+                    raise endpoints.BadRequestException('Invalid move!')
+
+                if move in SHIP1A or move in SHIP2A or move in SHIP3A or move in SHIP4A:
+                    game.user_a_playboard[move] = 'O'
+                else:
+                    game.user_a_playboard[move] = 'X'
+
+                ship1_revealed = check_full_ship_revealed(user_b_playboard, SHIP1A)
+                ship2_revealed = check_full_ship_revealed(user_b_playboard, SHIP2A)
+                ship3_revealed = check_full_ship_revealed(user_b_playboard, SHIP3A)
+                ship4_revealed = check_full_ship_revealed(user_b_playboard, SHIP4A)
+
+                if ship1_revealed:
+                    for i in SHIP1A:
+                        game.user_b_playboard[i] = "A1"
+
+                if ship2_revealed:
+                    for i in SHIP2A:
+                        game.user_b_playboard[i] = "A2"
+
+                if ship3_revealed:
+                    for i in SHIP3A:
+                        game.user_b_playboard[i] = "A3"
+
+                if ship4_revealed:
+                    for i in SHIP4A:
+                        game.user_b_playboard[i] = "A4"
+
+
+            winner = check_winner(user_a_playboard,
+                                  user_b_playboard,
+                                  game.user_a_shipsboard,
+                                  game.user_b_shipsboard,
+                                  game.user_a,
+                                  game.user_b)
+            if winner:
+                game.end_game(winner)
+
+            game.put()
+            return game.to_form()
+
 
 
 
