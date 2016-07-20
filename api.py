@@ -75,6 +75,15 @@ class BattleShipAPI(remote.Service):
         if user_b.key != game.user_b:
             raise endpoints.BadRequestException('User_b is not you')
 
+
+        ship1a = []
+        ship2a = []
+        ship3a = []
+        ship4a = []
+        ship1b = []
+        ship2b = []
+        ship3b = []
+        ship4b = []
         position_ship_1_a = request.ship_1_a
         if position_ship_1_a < 0 or position_ship_1_a > 99:
             raise endpoints.BadRequestException(
@@ -195,7 +204,7 @@ class BattleShipAPI(remote.Service):
             game.user_b_board[i] = 'B2'
 
 
-        position_ship_3_b = request.ship_3_
+        position_ship_3_b = request.ship_3_b
         if position_ship_3_b < 0 or position_ship_3_b > 99:
             raise endpoints.BadRequestException(
                     'Invalid placement! Your ship placement cannot be outside the board')
@@ -237,8 +246,6 @@ class BattleShipAPI(remote.Service):
         
         game.put()
         return game.to_form()
-
-
 
 
 
