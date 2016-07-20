@@ -9,6 +9,11 @@ handlers:
   script: api.api
   secure: always
 
+- url: /crons/send_reminder
+  script: main.app
+
+- url: /tasks/send_game_move_email
+  script: main.app
 
 libraries:
 - name: endpoints
