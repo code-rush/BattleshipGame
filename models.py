@@ -37,7 +37,8 @@ class Game(ndb.Model):
     user_b = ndb.KeyProperty(required=True, kind='User')
     game_over = ndb.BooleanProperty(required=True, default=False)
     winner = ndb.KeyProperty()
-    game_history = ndb.PickleProperty(required=True)
+    user_a_game_history = ndb.PickleProperty(required=True)
+    user_b_game_history = ndb.PickleProperty(required=True)
 
     @classmethod
     def new_game(cls, user_a, user_b):
@@ -47,7 +48,8 @@ class Game(ndb.Model):
                     next_move=user_a)
         game.user_a_board = ['' for i in range(100)]
         game.user_b_board = ['' for i in range(100)]
-        game.game_history = []
+        game.user_a_game_history = []
+        game.user_b_game_history = []
         game.put()
         return game
 
