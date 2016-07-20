@@ -9,9 +9,12 @@ from utils import get_by_urlsafe
 
 NEW_GAME_REQUEST = endpoints.ResourceContainer(NewGameForm)
 GET_GAME_REQUEST = endpoints.ResourceContainer(
-       urlsafe_game_key=messages.StringField(1))
+        urlsafe_game_key=messages.StringField(1))
+GET_USER_GAME_REQUEST = endpoints.ResourceContainer(
+        urlsafe_game_key=messages.StringField(1),
+        user_name=messages.StringField(2))
 MAKE_MOVE_REQUEST = endpoints.ResourceContainer(MakeMoveForm,
-       urlsafe_game_key=messages.StringField(1))
+        urlsafe_game_key=messages.StringField(1))
 USER_REQUEST = endpoints.ResourceContainer(user_name=messages.StringField(1),
                                            email=messages.StringField(2))
 PLACE_SHIP_REQUEST = endpoints.ResourceContainer(PlaceShipsForm,
@@ -246,6 +249,22 @@ class BattleShipAPI(remote.Service):
         
         game.put()
         return game.to_form()
+
+
+        @endpoints.method(GET_USER_GAME_REQUEST, StringMessage,
+                          name='get_game_history',
+                          path='game/{urlsafe_game_key}/{user}/history')
+        def get_game_history(self, request):
+            game = get_by_urlsafe(urlsafe_game_key, Game)
+            user = User.query(User.name = request.user_name).get()
+            if not game:
+                raise endpoints.NotFoundException('Game not found')
+            if user.key != game.user_a and user.key != game.user_b:
+                raise endpoints.BadRequestException('User is not in this game')
+            if user.key == game.user_a:
+                return StringMessage(message=str(game.user_a_game_history))
+            else:
+                return StringMessage(message=str(game.user_b_game_history))
 
 
 
