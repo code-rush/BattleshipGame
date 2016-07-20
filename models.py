@@ -9,7 +9,24 @@ class User(ndb.Model):
     email = ndb.StringProperty(required=True)
     wins = ndb.IntegerProperty(default=0)
     games_played = ndb.IntegerProperty(default=0)
-    # board = ndb.PickleProperty()
+
+    def to_form(self):
+        return UserForm(name=self.name,
+                    email=self.email,
+                    wins=self.wins,
+                    games_played=self.games_played)
+
+    def add_win(self):
+        """Add a win"""
+        self.wins += 1
+        self.games_played += 1
+        self.put()
+
+    def add_loss(self):
+        """Add a loss"""
+        self.games_played += 1
+        self.put()
+
 
 class Game(ndb.Model):
     """Game Object"""
@@ -46,6 +63,15 @@ class Game(ndb.Model):
         if self.winner:
             form.winner = self.winner.get().name
         return form
+
+    def end_game(self, winner):
+        """Ends the game"""
+        self.winner = winner
+        self.game_over = True
+        self.put()
+        loser = self.user_a if winner == self.user_b else self.user_b
+        winner.get().add_win
+        loser.get().add_loss
 
 
 class GameForm(messages.Message):
