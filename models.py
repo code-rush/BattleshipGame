@@ -10,11 +10,19 @@ class User(ndb.Model):
     wins = ndb.IntegerProperty(default=0)
     games_played = ndb.IntegerProperty(default=0)
 
+    @property
+    def win_percentage(self):
+        if self.games_played > 0:
+            return float(self.wins) / float(self.games_played)
+        else:
+            return 0
+
     def to_form(self):
         return UserForm(name=self.name,
                     email=self.email,
                     wins=self.wins,
-                    games_played=self.games_played)
+                    games_played=self.games_played,
+                    wins_percentage=self.win_percentage)
 
     def add_win(self):
         """Add a win"""
@@ -96,6 +104,7 @@ class UserForm(messages.Message):
     email = messages.StringField(2)
     wins = messages.IntegerField(3, required=True)
     games_played = messages.IntegerField(4, required=True)
+    wins_percentage = messages.FloatField(5, required=True)
 
 
 class NewGameForm(messages.Message):
