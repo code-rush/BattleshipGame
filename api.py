@@ -252,143 +252,141 @@ class BattleShipAPI(remote.Service):
         return game.to_form()
 
 
-        @endpoints.method(GET_USER_GAME_REQUEST, StringMessage,
-                          name='get_game_history',
-                          path='game/{urlsafe_game_key}/{user}/history')
-        def get_game_history(self, request):
-            game = get_by_urlsafe(request.urlsafe_game_key, Game)
-            user = User.query(User.name == request.user_name).get()
-            if not game:
-                raise endpoints.NotFoundException('Game not found')
-            if user.key != game.user_a and user.key != game.user_b:
-                raise endpoints.BadRequestException('User is not in this game')
-            if user.key == game.user_a:
-                return StringMessage(message=str(game.user_a_playboard))
+    @endpoints.method(GET_USER_GAME_REQUEST, StringMessage,
+                      name='get_game_history',
+                      path='game/{urlsafe_game_key}/history')
+    def get_game_history(self, request):
+        """Returns users games moves history"""
+        game = get_by_urlsafe(request.urlsafe_game_key, Game)
+        user = User.query(User.name == request.user_name).get()
+        if not game:
+            raise endpoints.NotFoundException('Game not found')
+        if user.key != game.user_a and user.key != game.user_b:
+            raise endpoints.BadRequestException('User is not in this game')
+        if user.key == game.user_a:
+            return StringMessage(message=str(game.user_a_playboard))
+        else:
+            return StringMessage(message=str(game.user_b_playboard))
+
+    
+    @endpoints.method(GET_GAME_REQUEST, StringMessage, name='cancel_game',
+                      path='game/{urlsafe_game_key}', http_method='POST')
+    def cancel_game(self, request):
+        """Deletes a game"""
+        game = get_by_urlsafe(request.urlsafe_game_key, Game)
+
+        if game and game.game_over:
+            raise endpoints.BadRequestException('Game is already over')
+        elif game and not game.game_over:
+            game.key.delete()
+            return StringMessage(message='Game deleted!')
+        else:
+            raise endpoints.NotFoundException('Game not found')
+
+
+    @endpoints.method(USER_REQUEST, GameForms, name='get_user_games',
+                      path='user/games', http_method='GET')
+    def get_user_games(self, request):
+        """Returns users all active games"""
+        user = User.query(User.name == request.user_name).get()
+        if not user:
+            raise endpoints.BadRequestException(
+                    'User with that name does not exist!')
+        games = Game.query(ndb.OR(Game.user_a == user.key,
+                                 Game.user_b == user.key)).\
+                    filter(Game.game_over == False)
+        return GameForms(items=[game.to_form() for game in games])
+
+
+    @endpoints.method(MAKE_MOVE_REQUEST, GameForm, name='make_move',
+                      path='game/{urlsafe_game_key}/move', http_method='POST')
+    def make_move(self, request):
+        """Make a move. Returns a game state"""
+        game = get_by_urlsafe(request.urlsafe_game_key, Game)
+        if not game:
+            raise endpoints.NotFoundException('Game not found')
+        if game.game_over:
+            raise endpoints.NotFoundException('Game already over')
+
+        user = User.query(User.name == request.user_name).get()
+        if user.key != game.next_move:
+            raise endpoints.BadRequestException('Its not your turn!')
+
+        move = request.move
+        if move < 0 or move > 99:
+            raise endpoints.BadRequestException('Invalid move! Must be\
+                        0 and 99')
+
+        if user.key == game.user_a:
+            if game.user_a_playboard[move] != '':
+                raise endpoints.BadRequestException('Invalid move!')
+
+            if move in SHIP1B or move in SHIP2B or move in SHIP3B or move in SHIP4B:
+                game.user_a_playboard[move] = 'O'
             else:
-                return StringMessage(message=str(game.user_b_playboard))
+                game.user_a_playboard[move] = 'X'
 
-        
-        @endpoints.method(GET_GAME_REQUEST, StringMessage, name='cancel_game',
-                          path='game/{urlsafe_game_key}', http_method='POST')
-        def cancel_game(self, request):
-            game = get_by_urlsafe(request.urlsafe_game_key, Game)
+            ship1_revealed = check_full_ship_revealed(user_a_playboard, SHIP1B)
+            ship2_revealed = check_full_ship_revealed(user_a_playboard, SHIP2B)
+            ship3_revealed = check_full_ship_revealed(user_a_playboard, SHIP3B)
+            ship4_revealed = check_full_ship_revealed(user_a_playboard, SHIP4B)
 
-            if game and game.game_over:
-                raise endpoints.BadRequestException('Game is already over')
-            elif game and not game.game_over:
-                game.key.delete()
-                return StringMessage(message='Game deleted!')
+            if ship1_revealed:
+                for i in SHIP1B:
+                    game.user_a_playboard[i] = "B1"
+
+            if ship2_revealed:
+                for i in SHIP2B:
+                    game.user_a_playboard[i] = "B2"
+
+            if ship3_revealed:
+                for i in SHIP3B:
+                    game.user_a_playboard[i] = "B3"
+
+            if ship4_revealed:
+                for i in SHIP4B:
+                    game.user_a_playboard[i] = "B4"
+
+
+        else:
+            if game.user_b_playboard[move] != '':
+                raise endpoints.BadRequestException('Invalid move!')
+
+            if move in SHIP1A or move in SHIP2A or move in SHIP3A or move in SHIP4A:
+                game.user_a_playboard[move] = 'O'
             else:
-                raise endpoints.NotFoundException('Game not found')
+                game.user_a_playboard[move] = 'X'
+
+            ship1_revealed = check_full_ship_revealed(user_b_playboard, SHIP1A)
+            ship2_revealed = check_full_ship_revealed(user_b_playboard, SHIP2A)
+            ship3_revealed = check_full_ship_revealed(user_b_playboard, SHIP3A)
+            ship4_revealed = check_full_ship_revealed(user_b_playboard, SHIP4A)
+
+            if ship1_revealed:
+                for i in SHIP1A:
+                    game.user_b_playboard[i] = "A1"
+
+            if ship2_revealed:
+                for i in SHIP2A:
+                    game.user_b_playboard[i] = "A2"
+
+            if ship3_revealed:
+                for i in SHIP3A:
+                    game.user_b_playboard[i] = "A3"
+
+            if ship4_revealed:
+                for i in SHIP4A:
+                    game.user_b_playboard[i] = "A4"
 
 
-        @endpoints.method(USER_REQUEST, GameForms, name='get_user_games',
-                          path='user/games', http_method='GET')
-        def get_user_games(self, request):
-            user = User.query(User.name == request.user_name).get()
-            if not user:
-                raise endpoints.BadRequestException(
-                        'User with that name does not exist!')
-            games = Game.query(ndb.OR(Game.user_a == user.key
-                                     Game.user_b == user.key)).\
-                        filter(Game.game_over == False)
-            return GameForms(items=[game.to_form() for game in games])
+        winner = check_winner(user_a_playboard, user_b_playboard, 
+                              game.user_a_shipsboard, game.user_b_shipsboard,
+                              game.user_a, game.user_b)
+        if winner:
+            game.end_game(winner)
 
-
-        @endpoints.method(MAKE_MOVE_REQUEST, GameForm, name='make_move'
-                          path='game/{urlsafe_game_key}', http_method='POST')
-        def make_move(self, request):
-            game = get_by_urlsafe(request.urlsafe_game_key, Game)
-            if not game:
-                raise endpoints.NotFoundException('Game not found')
-            if game.game_over:
-                raise endpoints.NotFoundException('Game already over')
-
-            user = User.query(User.name == request.user_name).get()
-            if user.key != game.next_move:
-                raise endpoints.BadRequestException('Its not your turn!')
-
-            move = request.move
-            if move < 0 or move > 99:
-                raise endpoints.BadRequestException('Invalid move! Must be\
-                            0 and 99')
-
-            if user.key == game.user_a:
-                if game.user_a_playboard[move] != '':
-                    raise endpoints.BadRequestException('Invalid move!')
-
-                if move in SHIP1B or move in SHIP2B or move in SHIP3B or move in SHIP4B:
-                    game.user_a_playboard[move] = 'O'
-                else:
-                    game.user_a_playboard[move] = 'X'
-
-                ship1_revealed = check_full_ship_revealed(user_a_playboard, SHIP1B)
-                ship2_revealed = check_full_ship_revealed(user_a_playboard, SHIP2B)
-                ship3_revealed = check_full_ship_revealed(user_a_playboard, SHIP3B)
-                ship4_revealed = check_full_ship_revealed(user_a_playboard, SHIP4B)
-
-                if ship1_revealed:
-                    for i in SHIP1B:
-                        game.user_a_playboard[i] = "B1"
-
-                if ship2_revealed:
-                    for i in SHIP2B:
-                        game.user_a_playboard[i] = "B2"
-
-                if ship3_revealed:
-                    for i in SHIP3B:
-                        game.user_a_playboard[i] = "B3"
-
-                if ship4_revealed:
-                    for i in SHIP4B:
-                        game.user_a_playboard[i] = "B4"
-
-
-            else:
-                if game.user_b_playboard[move] != '':
-                    raise endpoints.BadRequestException('Invalid move!')
-
-                if move in SHIP1A or move in SHIP2A or move in SHIP3A or move in SHIP4A:
-                    game.user_a_playboard[move] = 'O'
-                else:
-                    game.user_a_playboard[move] = 'X'
-
-                ship1_revealed = check_full_ship_revealed(user_b_playboard, SHIP1A)
-                ship2_revealed = check_full_ship_revealed(user_b_playboard, SHIP2A)
-                ship3_revealed = check_full_ship_revealed(user_b_playboard, SHIP3A)
-                ship4_revealed = check_full_ship_revealed(user_b_playboard, SHIP4A)
-
-                if ship1_revealed:
-                    for i in SHIP1A:
-                        game.user_b_playboard[i] = "A1"
-
-                if ship2_revealed:
-                    for i in SHIP2A:
-                        game.user_b_playboard[i] = "A2"
-
-                if ship3_revealed:
-                    for i in SHIP3A:
-                        game.user_b_playboard[i] = "A3"
-
-                if ship4_revealed:
-                    for i in SHIP4A:
-                        game.user_b_playboard[i] = "A4"
-
-
-            winner = check_winner(user_a_playboard,
-                                  user_b_playboard,
-                                  game.user_a_shipsboard,
-                                  game.user_b_shipsboard,
-                                  game.user_a,
-                                  game.user_b)
-            if winner:
-                game.end_game(winner)
-
-            game.put()
-            return game.to_form()
-
-
-
+        game.put()
+        return game.to_form()
 
 
 api = endpoints.api_server([BattleShipAPI])
