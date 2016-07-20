@@ -266,6 +266,21 @@ class BattleShipAPI(remote.Service):
             else:
                 return StringMessage(message=str(game.user_b_game_history))
 
+        
+        @endpoints.method(GET_GAME_REQUEST, StringMessage, name='cancel_game')
+                          path='game/{urlsafe_game_key}', http_method='POST')
+        def cancel_game(self, request):
+            game = get_by_urlsafe(request.urlsafe_game_key, Game)
+
+            if game and game.game_over:
+                raise endpoints.BadRequestException('Game is already over')
+            elif game and not game.game_over:
+                game.key.delete()
+                return StringMessage(message='Game deleted!')
+            else:
+                raise endpoints.NotFoundException('Game not found')
+
+
 
 
 api = endpoints.api_server([BattleShipAPI])
