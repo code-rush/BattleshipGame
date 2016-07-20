@@ -21,6 +21,15 @@ PLACE_SHIP_REQUEST = endpoints.ResourceContainer(PlaceShipsForm,
         urlsafe_game_key=messages.StringField(1))
 
 
+SHIP1A = []
+SHIP2A = []
+SHIP3A = []
+SHIP4A = []
+SHIP1B = []
+SHIP2B = []
+SHIP3B = []
+SHIP4B = []
+
 
 @endpoints.api(name='battle_ship', version='v1')
 class BattleShipAPI(remote.Service):
@@ -79,29 +88,21 @@ class BattleShipAPI(remote.Service):
             raise endpoints.BadRequestException('User_b is not you')
 
 
-        ship1a = []
-        ship2a = []
-        ship3a = []
-        ship4a = []
-        ship1b = []
-        ship2b = []
-        ship3b = []
-        ship4b = []
         position_ship_1_a = request.ship_1_a
         if position_ship_1_a < 0 or position_ship_1_a > 99:
             raise endpoints.BadRequestException(
                     'Invalid placement! Your ship placement cannot be outside the board')
-        ship1a = [position_ship_1_a + 20,
+        SHIP1A = [position_ship_1_a + 20,
                   position_ship_1_a + 10,
                   position_ship_1_a,
                   position_ship_1_a - 10,
                   position_ship_1_a - 20]
 
-        for i in ship1a:
+        for i in SHIP1A:
             if i > 99 or i < 0:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your part of the ship is outside the board')
-            if i in ship4a or i in ship2a or i in ship3a:
+            if i in SHIP4A or i in SHIP2A or i in SHIP3A:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your ships overlap')
             game.user_a_board[i] = 'A1'
@@ -112,15 +113,15 @@ class BattleShipAPI(remote.Service):
             raise endpoints.BadRequestException(
                     'Invalid placement! Your ship placement cannot be outside the board')
 
-        ship2a = [position_ship_2_a - 1,
+        SHIP2A = [position_ship_2_a - 1,
                   position_ship_2_a,
                   position_ship_2_a + 1]
 
-        for i in ship2a:
+        for i in SHIP2A:
             if i > 99 or i < 0:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your part of the ship is outside the board')
-            if i in ship1a or i in ship4a or i in ship3a:
+            if i in SHIP1A or i in SHIP4A or i in SHIP3A:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your ships overlap')
             game.user_a_board[i] = 'A2'
@@ -131,18 +132,18 @@ class BattleShipAPI(remote.Service):
             raise endpoints.BadRequestException(
                     'Invalid placement! Your ship placement cannot be outside the board')
 
-        ship3a = [position_ship_3_a + 10,
+        SHIP3A = [position_ship_3_a + 10,
                   position_ship_3_a - 1,
                   position_ship_3_a,
                   position_ship_3_a - 10]
 
         ships_position_check = [0,10,20,30,40,50,60,70,80,90]
 
-        for i in ship3a:
+        for i in SHIP3A:
             if i in ships_position_check:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your part of the ship is outside the board')
-            if i in ship1a or i in ship2a or i in ship4a:
+            if i in SHIP1A or i in SHIP2A or i in SHIP4A:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your ships overlap')
             game.user_a_board[i] = 'A3'
@@ -153,16 +154,16 @@ class BattleShipAPI(remote.Service):
             raise endpoints.BadRequestException(
                     'Invalid placement! Your ship placement cannot be outside the board')
 
-        ship4a = [position_ship_4_a + 19,
+        SHIP4A = [position_ship_4_a + 19,
                   position_ship_4_a - 1,
                   position_ship_4_a,
                   position_ship_4_a - 10]
 
-        for i in ship4a:
+        for i in SHIP4A:
             if i in ships_position_check:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your part of the ship is outside the board')
-            if i in ship1a or i in ship2a or i in ship3a:
+            if i in SHIP1A or i in SHIP2A or i in SHIP3A:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your ships overlap')
             game.user_a_board[i] = 'A4'
@@ -173,17 +174,17 @@ class BattleShipAPI(remote.Service):
         if position_ship_1_b < 0 or position_ship_1_b > 99:
             raise endpoints.BadRequestException(
                     'Invalid placement! Your ship placement cannot be outside the board')
-        ship1a = [position_ship_1_b + 20,
+        SHIP1A = [position_ship_1_b + 20,
                   position_ship_1_b + 10,
                   position_ship_1_b,
                   position_ship_1_b - 10,
                   position_ship_1_b - 20]
 
-        for i in ship1b:
+        for i in SHIP1B:
             if i > 99 or i < 0:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your part of the ship is outside the board')
-            if i in ship3b or i in ship2b or i in ship4b:
+            if i in SHIP3B or i in SHIP2B or i in SHIP4B:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your ships overlap')
             game.user_b_board[i] = 'B1'
@@ -193,15 +194,15 @@ class BattleShipAPI(remote.Service):
             raise endpoints.BadRequestException(
                     'Invalid placement! Your ship placement cannot be outside the board')
 
-        ship2b = [position_ship_2_b - 1,
+        SHIP2B = [position_ship_2_b - 1,
                   position_ship_2_b,
                   position_ship_2_b + 1]
 
-        for i in ship2b:
+        for i in SHIP2B:
             if i > 99 or i < 0:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your part of the ship is outside the board')
-            if i in ship1b or i in ship3b or i in ship4b:
+            if i in SHIP1B or i in SHIP3B or i in SHIP4B:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your ships overlap')
             game.user_b_board[i] = 'B2'
@@ -212,16 +213,16 @@ class BattleShipAPI(remote.Service):
             raise endpoints.BadRequestException(
                     'Invalid placement! Your ship placement cannot be outside the board')
 
-        ship3b = [position_ship_3_b + 10,
+        SHIP3B = [position_ship_3_b + 10,
                   position_ship_3_b - 1,
                   position_ship_3_b,
                   position_ship_3_b - 10]
 
-        for i in ship3b:
-            if i in ships_position_check and i not in ship1b and i not in ship3b and i not in ship4b:
+        for i in SHIP3B:
+            if i in ships_position_check and i not in SHIP1B and i not in SHIP3B and i not in SHIP4B:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your part of the ship is outside the board')
-            if i in ship1b or i in ship2b or i in ship4b:
+            if i in SHIP1B or i in SHIP2B or i in SHIP4B:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your ships overlap')
             game.user_b_board[i] = 'B3'
@@ -232,16 +233,16 @@ class BattleShipAPI(remote.Service):
             raise endpoints.BadRequestException(
                     'Invalid placement! Your ship placement cannot be outside the board')
 
-        ship4b = [position_ship_4_b + 19,
+        SHIP4B = [position_ship_4_b + 19,
                   position_ship_4_b - 1,
                   position_ship_4_b,
                   position_ship_4_b - 10]
 
-        for i in ship4b:
+        for i in SHIP4B:
             if i in ships_position_check:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your part of the ship is outside the board')
-            if i in ship1b or i in ship2b or i in ship2b:
+            if i in SHIP1B or i in SHIP2B or i in SHIP2B:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your ships overlap')
             game.user_b_board[i] = 'B4'
@@ -256,7 +257,7 @@ class BattleShipAPI(remote.Service):
                           path='game/{urlsafe_game_key}/{user}/history')
         def get_game_history(self, request):
             game = get_by_urlsafe(request.urlsafe_game_key, Game)
-            user = User.query(User.name = request.user_name).get()
+            user = User.query(User.name == request.user_name).get()
             if not game:
                 raise endpoints.NotFoundException('Game not found')
             if user.key != game.user_a and user.key != game.user_b:
@@ -267,7 +268,7 @@ class BattleShipAPI(remote.Service):
                 return StringMessage(message=str(game.user_b_game_history))
 
         
-        @endpoints.method(GET_GAME_REQUEST, StringMessage, name='cancel_game')
+        @endpoints.method(GET_GAME_REQUEST, StringMessage, name='cancel_game',
                           path='game/{urlsafe_game_key}', http_method='POST')
         def cancel_game(self, request):
             game = get_by_urlsafe(request.urlsafe_game_key, Game)
