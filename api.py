@@ -1,6 +1,7 @@
 import endpoints
 from protorpc import remote, messages, message_types
 from google.appengine.ext import ndb
+from google.appengine.api import taskqueue
 from models import User, Game
 from models import UserForm, GameForm, UserForms, GameForms, PlaceShipsForm
 from models import StringMessage, MakeMoveForm, NewGameForm
@@ -384,6 +385,10 @@ class BattleShipAPI(remote.Service):
                               game.user_a, game.user_b)
         if winner:
             game.end_game(winner)
+        else:
+            taskqueue.add(url='/tasks/send_game_move_email',
+                          params={'user_key': game.next_move.urlsafe(),
+                                  'game_key': game.key.urlsafe()})
 
         game.put()
         return game.to_form()
