@@ -1,5 +1,5 @@
 import endpoints
-from protorpc import remote, messages
+from protorpc import remote, messages, message_types
 from google.appengine.ext import ndb
 from models import User, Game
 from models import UserForm, GameForm, UserForms, GameForms, PlaceShipsForm
@@ -254,7 +254,7 @@ class BattleShipAPI(remote.Service):
 
     @endpoints.method(GET_USER_GAME_REQUEST, StringMessage,
                       name='get_game_history',
-                      path='game/{urlsafe_game_key}/history')
+                      path='game/{urlsafe_game_key}/{user_name}/history')
     def get_game_history(self, request):
         """Returns users games moves history"""
         game = get_by_urlsafe(request.urlsafe_game_key, Game)
@@ -387,6 +387,16 @@ class BattleShipAPI(remote.Service):
 
         game.put()
         return game.to_form()
+
+
+    @endpoints.method(message_types.VoidMessage, UserForms,
+                      name='get_user_rankings', path='user/ranking',
+                      http_method='GET')
+    def get_user_rankings(self, request):
+        """Returns all Users by their win percentage"""
+        users = User.query(User.games_played > 0).fetch()
+        users = sorted(users, key=lambda x: x.win_percentage, reverse=True)
+        return UserForms(items=[user.to_form() for user in users])
 
 
 api = endpoints.api_server([BattleShipAPI])
