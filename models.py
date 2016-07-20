@@ -30,15 +30,15 @@ class User(ndb.Model):
 
 class Game(ndb.Model):
     """Game Object"""
-    user_a_board = ndb.PickleProperty(required=True)
-    user_b_board = ndb.PickleProperty(required=True)
+    user_a_shipsboard = ndb.PickleProperty(required=True)
+    user_b_shipsboard = ndb.PickleProperty(required=True)
     next_move = ndb.KeyProperty(required=True)
     user_a = ndb.KeyProperty(required=True, kind='User')
     user_b = ndb.KeyProperty(required=True, kind='User')
     game_over = ndb.BooleanProperty(required=True, default=False)
     winner = ndb.KeyProperty()
-    user_a_game_history = ndb.PickleProperty(required=True)
-    user_b_game_history = ndb.PickleProperty(required=True)
+    user_a_playboard = ndb.PickleProperty(required=True)
+    user_b_playboard = ndb.PickleProperty(required=True)
 
     @classmethod
     def new_game(cls, user_a, user_b):
@@ -46,10 +46,10 @@ class Game(ndb.Model):
         game = Game(user_a=user_a,
                     user_b=user_b,
                     next_move=user_a)
-        game.user_a_board = ['' for i in range(100)]
-        game.user_b_board = ['' for i in range(100)]
-        game.user_a_game_history = []
-        game.user_b_game_history = []
+        game.user_a_shipsboard = ['' for i in range(100)]
+        game.user_b_shipsboard = ['' for i in range(100)]
+        game.user_a_playboard = ['' for i in range(100)]
+        game.user_b_playboard = ['' for i in range(100)]
         game.put()
         return game
 
@@ -60,8 +60,8 @@ class Game(ndb.Model):
                         user_b=self.user_b.get().name,
                         game_over=self.game_over,
                         next_move=self.next_move.get().name,
-                        user_a_board=str(self.user_a_board),    # printing out the users board with
-                        user_b_board=str(self.user_b_board))    # ship placements for testing purpose
+                        user_a_shipsboard=str(self.user_a_shipsboard),    # printing out the users board with
+                        user_b_shipsboard=str(self.user_b_shipsboard))    # ship placements for testing purpose
         if self.winner:
             form.winner = self.winner.get().name
         return form
@@ -79,13 +79,15 @@ class Game(ndb.Model):
 class GameForm(messages.Message):
     """GameForm for outbound game state information"""
     urlsafe_key = messages.StringField(1, required=True)
-    user_a_board = messages.StringField(2, required=True)
-    user_b_board = messages.StringField(3, required=True)
+    user_a_shipsboard = messages.StringField(2, required=True)
+    user_b_shipsboard = messages.StringField(3, required=True)
     next_move = messages.StringField(4, required=True)
     user_a = messages.StringField(5, required=True)
     user_b = messages.StringField(6, required=True)
     game_over = messages.BooleanField(7, required=True)
     winner = messages.StringField(8)
+    user_a_playboard = messages.StringField(9, required=True)
+    user_b_playboard = messages.StringField(10, required=True)
 
 
 class UserForm(messages.Message):
