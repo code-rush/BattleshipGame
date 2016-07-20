@@ -19,3 +19,19 @@ def get_by_urlsafe(urlsafe, model):
         raise ValueError('Incorrect Kind')
     return entity
     
+
+def check_full_ship_revealed(board, ship):
+    """Returns true if a ship is revealed"""
+    for cells in ship:
+        if not cells in board:
+            return False
+        return True
+
+def check_winner(playboard_a, playboard_b, shipsboard_a,
+                 shipsboard_b, user_a, user_b):
+    """Checks and returns winner if the player has hit all opponents ships"""
+    if playboard_a and shipsboard_b == shipsboard_b:
+        return user_a
+    if playboard_b and shipsboard_a == shipsboard_a:
+        return user_b
+        
