@@ -6,8 +6,10 @@
   I used PickleProperty to store the board.
 
 I could not think of a solution to change ships rotations. The ships designs 
-are hardcoded and can only be placed as they are without any rotation. Also checking if each ships
-is revealed by opponents making it visible for the player to be able to see that the player 
-has got the hit correctly. I think that this game would be easier to design on the front-end
-than the backend since most of it has to be hardcoded. It seems to be working perfectly for 
-now although with some limitations, but it was fun solving some problems.
+are hardcoded and can only be placed as they are without any rotation. 
+The ships placements cells are constant, hence I used them to check if a player 
+has got 'O' for that number of counts. If yes, then he is announced a winner and
+the game is set to end. I think that this game would be easier to design on the front-end
+than the backend since most of it has to be hardcoded to tackle each ship placements 
+accordingly. It seems to be working perfectly for now although with some limitations, 
+but it was fun solving some problems.

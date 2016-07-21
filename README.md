@@ -65,7 +65,10 @@ beacuse if they are placed there, part of the ship will be outside the board.
 	__place_ships__ endpoint. Users need to be in the same order as while creating a new game.
 	`a` and `b` indicates users whereas numbers indicates ships. To start playing, you need to
 	place all four ships on board.
-4. After placing ships, use __make_move__ endpoint to play game. Enjoy!
+4. After placing ships, use __make_move__ endpoint to play game. 
+5. When you place a move, 'O' will be used to show if you hit the ship else 'X' will be showed.
+
+Enjoy!
 
 
 ##Files Included:
