@@ -54,6 +54,9 @@ There are four types of ships:
     [center - 1 ][  center   ]
                  [center - 10]
 
+_Note:_ 2nd, 3rd and 4th ship will not be allowed to be placed at 0,10,20,30,40...100 positions 
+beacuse if they are placed there, part of the ship will be outside the board.
+
 
 ### Playing Instructions:
 1. Create minimum two users using __create_user__ endpoint.
