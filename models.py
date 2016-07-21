@@ -69,7 +69,9 @@ class Game(ndb.Model):
                         game_over=self.game_over,
                         next_move=self.next_move.get().name,
                         user_a_shipsboard=str(self.user_a_shipsboard),    # printing out the users board with
-                        user_b_shipsboard=str(self.user_b_shipsboard))    # ship placements for testing purpose
+                        user_b_shipsboard=str(self.user_b_shipsboard),    # ship placements for testing purpose
+                        user_a_playboard=str(self.user_a_playboard),
+                        user_b_playboard=str(self.user_b_playboard))    
         if self.winner:
             form.winner = self.winner.get().name
         return form

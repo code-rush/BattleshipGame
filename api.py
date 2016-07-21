@@ -5,7 +5,7 @@ from google.appengine.api import taskqueue
 from models import User, Game
 from models import UserForm, GameForm, UserForms, GameForms, PlaceShipsForm
 from models import StringMessage, MakeMoveForm, NewGameForm
-from utils import get_by_urlsafe, check_full_ship_revealed, check_winner
+from utils import get_by_urlsafe, check_full_ship_revealed
 
 
 NEW_GAME_REQUEST = endpoints.ResourceContainer(NewGameForm)
@@ -89,6 +89,16 @@ class BattleShipAPI(remote.Service):
             raise endpoints.BadRequestException('User_b is not you')
 
 
+        global SHIP1A
+        global SHIP2A
+        global SHIP3A
+        global SHIP4A
+        global SHIP1B
+        global SHIP2B
+        global SHIP3B
+        global SHIP4B
+
+
         position_ship_1_a = request.ship_1_a
         if position_ship_1_a < 0 or position_ship_1_a > 99:
             raise endpoints.BadRequestException(
@@ -155,7 +165,7 @@ class BattleShipAPI(remote.Service):
             raise endpoints.BadRequestException(
                     'Invalid placement! Your ship placement cannot be outside the board')
 
-        SHIP4A = [position_ship_4_a + 19,
+        SHIP4A = [position_ship_4_a - 11,
                   position_ship_4_a - 1,
                   position_ship_4_a,
                   position_ship_4_a - 10]
@@ -175,7 +185,7 @@ class BattleShipAPI(remote.Service):
         if position_ship_1_b < 0 or position_ship_1_b > 99:
             raise endpoints.BadRequestException(
                     'Invalid placement! Your ship placement cannot be outside the board')
-        SHIP1A = [position_ship_1_b + 20,
+        SHIP1B = [position_ship_1_b + 20,
                   position_ship_1_b + 10,
                   position_ship_1_b,
                   position_ship_1_b - 10,
@@ -234,7 +244,7 @@ class BattleShipAPI(remote.Service):
             raise endpoints.BadRequestException(
                     'Invalid placement! Your ship placement cannot be outside the board')
 
-        SHIP4B = [position_ship_4_b + 19,
+        SHIP4B = [position_ship_4_b + 11,
                   position_ship_4_b - 1,
                   position_ship_4_b,
                   position_ship_4_b - 10]
@@ -318,6 +328,15 @@ class BattleShipAPI(remote.Service):
             raise endpoints.BadRequestException('Invalid move! Must be\
                         0 and 99')
 
+        global SHIP1A
+        global SHIP2A
+        global SHIP3A
+        global SHIP4A
+        global SHIP1B
+        global SHIP2B
+        global SHIP3B
+        global SHIP4B
+
         if user.key == game.user_a:
             if game.user_a_playboard[move] != '':
                 raise endpoints.BadRequestException('Invalid move!')
@@ -327,63 +346,67 @@ class BattleShipAPI(remote.Service):
             else:
                 game.user_a_playboard[move] = 'X'
 
-            ship1_revealed = check_full_ship_revealed(user_a_playboard, SHIP1B)
-            ship2_revealed = check_full_ship_revealed(user_a_playboard, SHIP2B)
-            ship3_revealed = check_full_ship_revealed(user_a_playboard, SHIP3B)
-            ship4_revealed = check_full_ship_revealed(user_a_playboard, SHIP4B)
-
-            if ship1_revealed:
-                for i in SHIP1B:
-                    game.user_a_playboard[i] = "B1"
-
-            if ship2_revealed:
-                for i in SHIP2B:
-                    game.user_a_playboard[i] = "B2"
-
-            if ship3_revealed:
-                for i in SHIP3B:
-                    game.user_a_playboard[i] = "B3"
-
-            if ship4_revealed:
-                for i in SHIP4B:
-                    game.user_a_playboard[i] = "B4"
-
+            game.next_move = game.user_b
 
         else:
             if game.user_b_playboard[move] != '':
                 raise endpoints.BadRequestException('Invalid move!')
 
             if move in SHIP1A or move in SHIP2A or move in SHIP3A or move in SHIP4A:
-                game.user_a_playboard[move] = 'O'
+                game.user_b_playboard[move] = 'O'
             else:
-                game.user_a_playboard[move] = 'X'
+                game.user_b_playboard[move] = 'X'
 
-            ship1_revealed = check_full_ship_revealed(user_b_playboard, SHIP1A)
-            ship2_revealed = check_full_ship_revealed(user_b_playboard, SHIP2A)
-            ship3_revealed = check_full_ship_revealed(user_b_playboard, SHIP3A)
-            ship4_revealed = check_full_ship_revealed(user_b_playboard, SHIP4A)
+            game.next_move = game.user_a
 
-            if ship1_revealed:
-                for i in SHIP1A:
-                    game.user_b_playboard[i] = "A1"
+        ship1b_revealed = check_full_ship_revealed(game.user_a_playboard, SHIP1B)
+        ship2b_revealed = check_full_ship_revealed(game.user_a_playboard, SHIP2B)
+        ship3b_revealed = check_full_ship_revealed(game.user_a_playboard, SHIP3B)
+        ship4b_revealed = check_full_ship_revealed(game.user_a_playboard, SHIP4B)
 
-            if ship2_revealed:
-                for i in SHIP2A:
-                    game.user_b_playboard[i] = "A2"
+        if ship1b_revealed:
+            for i in SHIP1B:
+                game.user_a_playboard[i] = "B1"
 
-            if ship3_revealed:
-                for i in SHIP3A:
-                    game.user_b_playboard[i] = "A3"
+        if ship2b_revealed:
+            for i in SHIP2B:
+                game.user_a_playboard[i] = "B2"
 
-            if ship4_revealed:
-                for i in SHIP4A:
-                    game.user_b_playboard[i] = "A4"
+        if ship3b_revealed:
+            for i in SHIP3B:
+                game.user_a_playboard[i] = "B3"
+
+        if ship4b_revealed:
+            for i in SHIP4B:
+                game.user_a_playboard[i] = "B4"
+
+        ship1a_revealed = check_full_ship_revealed(game.user_b_playboard, SHIP1A)
+        ship2a_revealed = check_full_ship_revealed(game.user_b_playboard, SHIP2A)
+        ship3a_revealed = check_full_ship_revealed(game.user_b_playboard, SHIP3A)
+        ship4a_revealed = check_full_ship_revealed(game.user_b_playboard, SHIP4A)
+
+        if ship1a_revealed:
+            for i in SHIP1A:
+                game.user_b_playboard[i] = "A1"
+
+        if ship2a_revealed:
+            for i in SHIP2A:
+                game.user_b_playboard[i] = "A2"
+
+        if ship3a_revealed:
+            for i in SHIP3A:
+                game.user_b_playboard[i] = "A3"
+
+        if ship4a_revealed:
+            for i in SHIP4A:
+                game.user_b_playboard[i] = "A4"
 
 
-        winner = check_winner(user_a_playboard, user_b_playboard, 
-                              game.user_a_shipsboard, game.user_b_shipsboard,
-                              game.user_a, game.user_b)
-        if winner:
+        if ship1a_revealed and ship2a_revealed and ship3a_revealed and ship4a_revealed:
+            winner = game.user_b
+            game.end_game(winner)
+        elif ship1b_revealed and ship2b_revealed and ship3b_revealed and ship4b_revealed:
+            winner = game.user_a
             game.end_game(winner)
         else:
             taskqueue.add(url='/tasks/send_game_move_email',
