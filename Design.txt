@@ -1,0 +1,13 @@
+##Design Decisions
+
+- Added next_move, user_a, user_b, winner and game_over fields. I used game_over
+  flag to mark completed games and other fields as KeyProperty to the Game.
+- Added four fields to store board in Game(two for placing ships and two to play on).
+  I used PickleProperty to store the board.
+
+I could not think of a solution to change ships rotations. The ships designs 
+are hardcoded and can only be placed as they are without any rotation. Also checking if each ships
+is revealed by opponents making it visible for the player to be able to see that the player 
+has got the hit correctly. I think that this game would be easier to design on the front-end
+than the backend since most of it has to be hardcoded. It seems to be working perfectly for 
+now although with some limitations, but it was fun solving some problems.

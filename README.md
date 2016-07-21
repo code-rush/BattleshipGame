@@ -20,14 +20,49 @@ The board is represented as a 1-D list of squares with indexes as follows:
 [10,11,12.....,19]
 [0,1,2.........,9]
 
+### Ship Placements:
+- Ship placements are static, there is no rotation applied to them. 
+- Ships cannot overlap with each other.
+- A part of the ship cannot be outside the board.
+
+If you can't place ships. Read through below instructions on how the
+ships are designed and do calculations taking board into consideration 
+to get the answers.
+
+There are four types of ships:
+1) Vertical Ship: Takes five cell placements vertically, mid point as the center
+
+    [center + 20]
+    [center + 10]
+    [  center   ]
+    [center - 10]
+    [center - 20]
+
+2) Horizontal Ship: Takes three cell placements horizontally, mid point as the center
+
+    [center - 1][center][center + 1]
+
+3) T shape ship: Takes 4 cell placements.
+
+                [center + 10]
+    [center - 1][   center  ]
+                [center - 10]
+
+4) Number 4 shape ship: Takes four cell placements,
+
+    [center + 9 ]
+    [center - 1 ][  center   ]
+                 [center - 10]
+
+
 ### Playing Instructions:
-1. Create minimum two users using __create_user api__.
-2. Create a new game with two users using __new_game api__.
+1. Create minimum two users using __create_user__ endpoint.
+2. Create a new game with two users using __new_game__ endpoint.
 3. Before starting to play, you need to place ships on boards of each user. Place ships using
-	__place_ships__ api. Users need to be in the same order as while creating a new game.
+	__place_ships__ endpoint. Users need to be in the same order as while creating a new game.
 	`a` and `b` indicates users whereas numbers indicates ships. To start playing, you need to
 	place all four ships on board.
-4. After placing ships, use __make_move__ api to play game. Enjoy!
+4. After placing ships, use __make_move__ endpoint to play game. Enjoy!
 
 
 ##Files Included:
@@ -42,10 +77,11 @@ The board is represented as a 1-D list of squares with indexes as follows:
  - **create_user**
     - Path: 'user'
     - Method: POST
-    - Parameters: user_name
+    - Parameters: user_name, email
     - Returns: Message confirming creation of the User.
     - Description: Creates a new User. user_name provided must be unique. Will 
     raise a ConflictException if a User with that user_name already exists.
+    email is required.
     
  - **new_game**
     - Path: 'game'
@@ -53,7 +89,22 @@ The board is represented as a 1-D list of squares with indexes as follows:
     - Parameters: user_a, user_b
     - Returns: GameForm with initial game state.
     - Description: Creates a new Game between two users `user_a` and `user_b`.
-     
+
+ - **get_scores**
+    - Path: 'scores'
+    - Method: GET
+    - Parameters: None
+    - Returns: ScoreForms.
+    - Description: Returns all Scores in the database (unordered).
+    
+ - **get_user_scores**
+    - Path: 'scores/user/{user_name}'
+    - Method: GET
+    - Parameters: user_name
+    - Returns: ScoreForms. 
+    - Description: Returns all Scores recorded by the provided player (unordered).
+    Will raise a NotFoundException if the User does not exist.
+
  - **get_game**
     - Path: 'game/{urlsafe_game_key}'
     - Method: GET
@@ -63,7 +114,7 @@ The board is represented as a 1-D list of squares with indexes as follows:
     
  - **place_ships_on_board**
  	- Path: 'game/{urlsafe_game_key}/place_ships'
- 	- Method: POST
+ 	- Method: PUT
  	- Parameters: user_a, ship_1_a, ship_2_a, ship_3_a, ship_4_a, user_b, ship_1_b,
  	 ship_2_b, ship_3_b, ship_4_b
  	- Returns: GameForm with current game state with ships placed on both boards.
@@ -136,17 +187,3 @@ The board is represented as a 1-D list of squares with indexes as follows:
     - Container for one or more UserForm.
  - **StringMessage**
     - General purpose String container.
-    
-    
-##Design Decisions
-- Added next_move, user_a, user_b, winner and game_over fields. I used game_over
-  flag to mark completed games and other fields as KeyProperty to the Game.
-- Added four fields to store board in Game(two for placing ships and two to play on).
-  I used PickleProperty to store the board.
-
-I could not think of a solution to change ships rotations. The ships designs 
-are hardcoded and can only be placed as they are without any rotation. Also checking if each ships
-is revealed by opponents making it visible for the player to be able to see that the player 
-has got the hit correctly. I think that this game would be easier to design on the front-end
-than the backend since most of it has to be hardcoded. It seems to be working perfectly for 
-now although with some limitations, but it was fun solving some problems.

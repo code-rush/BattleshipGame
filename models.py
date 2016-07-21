@@ -85,6 +85,17 @@ class Game(ndb.Model):
         winner.get().add_win
         loser.get().add_loss
 
+class Score(ndb.Model):
+    """Score Object"""
+    date = ndb.DateProperty(required=True)
+    winner = ndb.KeyProperty(required=True)
+    loser = ndb.KeyProperty(required=True)
+
+    def to_form(self):
+        return ScoreForm(date=str(self.date),
+                         winner=self.winner.get().name,
+                         loser=self.loser.get().name)
+
 
 class GameForm(messages.Message):
     """GameForm for outbound game state information"""
@@ -107,6 +118,17 @@ class UserForm(messages.Message):
     wins = messages.IntegerField(3, required=True)
     games_played = messages.IntegerField(4, required=True)
     wins_percentage = messages.FloatField(5, required=True)
+
+class ScoreForm(messages.Message):
+    """ScoreForm for outbound Score information"""
+    date = messages.StringField(1, required=True)
+    winner = messages.StringField(2, required=True)
+    loser = messages.StringField(3, required=True)
+
+
+class ScoreForms(messages.Message):
+    """Return multiple ScoreForms"""
+    items = messages.MessageField(ScoreForm, 1, repeated=True)
 
 
 class NewGameForm(messages.Message):

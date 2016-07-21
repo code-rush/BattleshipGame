@@ -20,9 +20,13 @@ def get_by_urlsafe(urlsafe, model):
     return entity
     
 
-def check_full_ship_revealed(board, ship):
-    """Returns true if a ship is revealed"""
-    for cells in ship:
-        if not cells in board:
+
+def check_placement(ship_placement, ship_number):
+    """Returns true if ship placed inside the board"""
+    ships_position_check = [0,10,20,30,40,50,60,70,80,90]
+    if ship_placement > 99 or ship_placement < 0:
             return False
-        return True
+    if ship_number in [2,3,4]:
+        if ship_placement in ships_position_check:
+            return False
+    return True

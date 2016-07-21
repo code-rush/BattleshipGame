@@ -12,7 +12,7 @@ class SendReminderEmail(webapp2.RequestHandler):
 		users = User.query(User.email != None)
 
 		for user in users:
-			games = Games.query(ndb.OR(Game.user_a == user.key,
+			games = Game.query(ndb.OR(Game.user_a == user.key,
 									   Game.user_b == user.key)).\
 						  filter(Game.game_over == False)
 			if games.count() > 0:
