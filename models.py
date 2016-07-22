@@ -29,25 +29,14 @@ class User(ndb.Model):
         if self.games_played > 0:
             return float(self.wins) / float(self.games_played)
         else:
-            return 0
+            return 0.0
 
     def to_form(self):
         return UserForm(name=self.name,
                     email=self.email,
                     wins=self.wins,
                     games_played=self.games_played,
-                    wins_percentage=self.win_percentage)
-
-    def add_win(self):
-        """Add a win"""
-        self.wins += 1
-        self.games_played += 1
-        self.put()
-
-    def add_loss(self):
-        """Add a loss"""
-        self.games_played += 1
-        self.put()
+                    win_percentage=self.win_percentage)
 
 
 class Game(ndb.Model):
@@ -62,6 +51,8 @@ class Game(ndb.Model):
     user_a_playboard = ndb.PickleProperty(required=True)
     user_b_playboard = ndb.PickleProperty(required=True)
     game_start = ndb.BooleanProperty(required=True, default=False)
+    user_a_game_history = ndb.PickleProperty(required=True)
+    user_b_game_history = ndb.PickleProperty(required=True)
 
     @classmethod
     def new_game(cls, user_a, user_b):
@@ -73,6 +64,8 @@ class Game(ndb.Model):
         game.user_b_shipsboard = ['' for i in range(100)]
         game.user_a_playboard = ['' for i in range(100)]
         game.user_b_playboard = ['' for i in range(100)]
+        game.user_a_game_history = []
+        game.user_b_game_history = []
         game.put()
         return game
 
@@ -110,8 +103,13 @@ class Game(ndb.Model):
         self.game_over = True
         self.put()
         loser = self.user_a if winner == self.user_b else self.user_b
-        winner.get().add_win
-        loser.get().add_loss
+        winr = winner.get()
+        losr = loser.get()
+        winr.wins += 1
+        winr.games_played += 1
+        losr.games_played += 1 
+        winr.put()
+        losr.put()
         score = Score(date=date.today(), winner=winner, loser=loser)
         score.put()
 
@@ -147,7 +145,7 @@ class UserForm(messages.Message):
     email = messages.StringField(2)
     wins = messages.IntegerField(3, required=True)
     games_played = messages.IntegerField(4, required=True)
-    wins_percentage = messages.FloatField(5, required=True)
+    win_percentage = messages.FloatField(5, required=True)
 
 class ScoreForm(messages.Message):
     """ScoreForm for outbound Score information"""
@@ -170,16 +168,15 @@ class NewGameForm(messages.Message):
 class PlaceShipsForm(messages.Message):
     """Used by users to place ships on their board"""
     user_a = messages.StringField(1, required=True)
-    ship_1_a = messages.IntegerField(2, required=True)
-    ship_2_a = messages.IntegerField(3, required=True)
-    ship_3_a = messages.IntegerField(4, required=True)
-    ship_4_a = messages.IntegerField(5, required=True)
-    user_b = messages.StringField(6, required=True)
-    ship_1_b = messages.IntegerField(7, required=True)
-    ship_2_b = messages.IntegerField(8, required=True)
-    ship_3_b = messages.IntegerField(9, required=True)
-    ship_4_b = messages.IntegerField(10, required=True)
-
+    # ship_1_a = messages.IntegerField(2, required=True)
+    ship_2_a = messages.IntegerField(2, required=True)
+    # ship_3_a = messages.IntegerField(4, required=True)
+    # ship_4_a = messages.IntegerField(5, required=True)
+    user_b = messages.StringField(3, required=True)
+    # ship_1_b = messages.IntegerField(7, required=True)
+    ship_2_b = messages.IntegerField(4, required=True)
+    # ship_3_b = messages.IntegerField(9, required=True)
+    # ship_4_b = messages.IntegerField(10, required=True)
 
 
 class MakeMoveForm(messages.Message):
@@ -199,3 +196,10 @@ class StringMessage(messages.Message):
     """Single outbound string message"""
     message = messages.StringField(1, required=True)
 
+class GameHistoryForm(messages.Message):
+    """Returns History for the game"""
+    game_status = messages.StringField(1, required=True)
+    winner = messages.StringField(3)
+    game_history = messages.StringField(2, required=True)
+
+    
