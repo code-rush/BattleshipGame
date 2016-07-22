@@ -47,6 +47,7 @@ class Game(ndb.Model):
     winner = ndb.KeyProperty()
     user_a_playboard = ndb.PickleProperty(required=True)
     user_b_playboard = ndb.PickleProperty(required=True)
+    game_start = ndb.BooleanProperty(required=True, default=False)
 
     @classmethod
     def new_game(cls, user_a, user_b):
