@@ -3,6 +3,20 @@ from google.appengine.ext import ndb
 from protorpc import messages
 
 
+class Board(messages.Message):
+    """Output readable board"""
+    row9 = messages.StringField(10)
+    row8 = messages.StringField(9)
+    row7 = messages.StringField(8)
+    row6 = messages.StringField(7)
+    row5 = messages.StringField(6)
+    row4 = messages.StringField(5)
+    row3 = messages.StringField(4)
+    row2 = messages.StringField(3)
+    row1 = messages.StringField(2)
+    row0 = messages.StringField(1)
+
+
 class User(ndb.Model):
     """User Profile"""
     name = ndb.StringProperty(required=True)
@@ -62,6 +76,19 @@ class Game(ndb.Model):
         game.put()
         return game
 
+    def printBoard(self, board):
+        r9 = ", ".join([tile if tile != '' else '~' for tile in board[90:100]])
+        r8 = ", ".join([tile if tile != '' else '~' for tile in board[80:90]])
+        r7 = ", ".join([tile if tile != '' else '~' for tile in board[70:80]])
+        r6 = ", ".join([tile if tile != '' else '~' for tile in board[60:70]])
+        r5 = ", ".join([tile if tile != '' else '~' for tile in board[50:60]])
+        r4 = ", ".join([tile if tile != '' else '~' for tile in board[40:50]])
+        r3 = ", ".join([tile if tile != '' else '~' for tile in board[30:40]])
+        r2 = ", ".join([tile if tile != '' else '~' for tile in board[20:30]])
+        r1 = ", ".join([tile if tile != '' else '~' for tile in board[10:20]])
+        r0 = ", ".join([tile if tile != '' else '~' for tile in board[0:10]])
+        return Board(row9=r9, row8=r8, row7=r7, row6=r6, row5=r5, row4=r4, row3=r3, row2=r2, row1=r1, row0=r0)
+
     def to_form(self):
         """Returns GameForm representation of Game"""
         form = GameForm(urlsafe_key=self.key.urlsafe(),
@@ -69,10 +96,10 @@ class Game(ndb.Model):
                         user_b=self.user_b.get().name,
                         game_over=self.game_over,
                         next_move=self.next_move.get().name,
-                        user_a_shipsboard=str(self.user_a_shipsboard),    # printing out the users board with
-                        user_b_shipsboard=str(self.user_b_shipsboard),    # ship placements for testing purpose
-                        user_a_playboard=str(self.user_a_playboard),
-                        user_b_playboard=str(self.user_b_playboard))    
+                        user_a_shipsboard=self.printBoard(self.user_a_shipsboard),    # printing out the users board with
+                        user_b_shipsboard=self.printBoard(self.user_b_shipsboard),    # ship placements for testing purpose
+                        user_a_playboard=self.printBoard(self.user_a_playboard),
+                        user_b_playboard=self.printBoard(self.user_b_playboard))    
         if self.winner:
             form.winner = self.winner.get().name
         return form
@@ -85,6 +112,8 @@ class Game(ndb.Model):
         loser = self.user_a if winner == self.user_b else self.user_b
         winner.get().add_win
         loser.get().add_loss
+        score = Score(date=date.today(), winner=winner, loser=loser)
+        score.put()
 
 class Score(ndb.Model):
     """Score Object"""
@@ -101,15 +130,15 @@ class Score(ndb.Model):
 class GameForm(messages.Message):
     """GameForm for outbound game state information"""
     urlsafe_key = messages.StringField(1, required=True)
-    user_a_shipsboard = messages.StringField(2, required=True)
-    user_b_shipsboard = messages.StringField(3, required=True)
+    user_a_shipsboard = messages.MessageField(Board, 2, required=True)
+    user_b_shipsboard = messages.MessageField(Board, 3, required=True)
     next_move = messages.StringField(4, required=True)
     user_a = messages.StringField(5, required=True)
     user_b = messages.StringField(6, required=True)
     game_over = messages.BooleanField(7, required=True)
     winner = messages.StringField(8)
-    user_a_playboard = messages.StringField(9, required=True)
-    user_b_playboard = messages.StringField(10, required=True)
+    user_a_playboard = messages.MessageField(Board, 9, required=True)
+    user_b_playboard = messages.MessageField(Board, 10, required=True)
 
 
 class UserForm(messages.Message):

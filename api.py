@@ -130,7 +130,7 @@ class BattleShipAPI(remote.Service):
             raise endpoints.BadRequestException(
                     'Invalid placement! Your ship placement cannot be outside the board')
 
-        ship4a = [position_ship_4_a - 9,
+        ship4a = [position_ship_4_a + 9,
                   position_ship_4_a - 1,
                   position_ship_4_a,
                   position_ship_4_a - 10]
@@ -143,7 +143,7 @@ class BattleShipAPI(remote.Service):
             if i in ship2a or i in ship3a or i in ship4a:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your ships overlap')
-            game.user_a_shipsboard[i] = 'A'
+            game.user_a_shipsboard[i] = 'A1'
             SHIPSA.append(ship1a)
 
 
@@ -154,7 +154,7 @@ class BattleShipAPI(remote.Service):
             if i in ship1a or i in ship4a or i in ship3a:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your ships overlap')
-            game.user_a_shipsboard[i] = 'A'
+            game.user_a_shipsboard[i] = 'A2'
             SHIPSA.append(ship2a)
 
 
@@ -165,7 +165,7 @@ class BattleShipAPI(remote.Service):
             if i in ship1a or i in ship2a or i in ship4a:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your ships overlap')
-            game.user_a_shipsboard[i] = 'A'
+            game.user_a_shipsboard[i] = 'A3'
             SHIPSA.append(ship3a)
         
 
@@ -176,7 +176,7 @@ class BattleShipAPI(remote.Service):
             if i in ship1a or i in ship2a or i in ship3a:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your ships overlap')
-            game.user_a_shipsboard[i] = 'A'
+            game.user_a_shipsboard[i] = 'A4'
             SHIPSA.append(ship4a)
 
 
@@ -223,7 +223,7 @@ class BattleShipAPI(remote.Service):
             raise endpoints.BadRequestException(
                     'Invalid placement! Your ship placement cannot be outside the board')
 
-        ship4b = [position_ship_4_b - 9,
+        ship4b = [position_ship_4_b + 9,
                   position_ship_4_b - 1,
                   position_ship_4_b,
                   position_ship_4_b - 10]
@@ -236,7 +236,7 @@ class BattleShipAPI(remote.Service):
             if i in ship2b or i in ship3b or i in ship4b:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your ships overlap')
-            game.user_b_shipsboard[i] = 'B'
+            game.user_b_shipsboard[i] = 'B1'
             SHIPSB.append(ship1b)
 
 
@@ -248,7 +248,7 @@ class BattleShipAPI(remote.Service):
             if i in ship1b or i in ship4b or i in ship3b:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your ships overlap')
-            game.user_b_shipsboard[i] = 'B'
+            game.user_b_shipsboard[i] = 'B2'
             SHIPSB.append(ship2b)
 
 
@@ -259,7 +259,7 @@ class BattleShipAPI(remote.Service):
             if i in ship1b or i in ship2b or i in ship4b:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your ships overlap')
-            game.user_b_shipsboard[i] = 'B'
+            game.user_b_shipsboard[i] = 'B3'
             SHIPSB.append(ship3b)
         
 
@@ -270,7 +270,7 @@ class BattleShipAPI(remote.Service):
             if i in ship1b or i in ship2b or i in ship3b:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your ships overlap')
-            game.user_b_shipsboard[i] = 'B'
+            game.user_b_shipsboard[i] = 'B4'
             SHIPSB.append(ship4b)
 
         if game.game_start:
@@ -346,6 +346,8 @@ class BattleShipAPI(remote.Service):
         if move < 0 or move > 99:
             raise endpoints.BadRequestException('Invalid move! Must be\
                         0 and 99')
+        if not game.game_start:
+            raise endpoints.BadRequestException('Place ships to start playing')
 
         global SHIPSA
         global SHIPSB
