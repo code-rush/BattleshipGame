@@ -277,6 +277,7 @@ class BattleShipAPI(remote.Service):
             raise endpoints.BadRequestException(
                     'Game already started! Can\'t change ships positions.')
         else:
+            game.game_start = True
             game.put()
         return game.to_form()
 
