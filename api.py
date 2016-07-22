@@ -5,7 +5,7 @@ from google.appengine.api import taskqueue
 from models import User, Game, Score
 from models import UserForm, GameForm, UserForms, GameForms, PlaceShipsForm
 from models import StringMessage, MakeMoveForm, NewGameForm
-from models import ScoreForm, ScoreForms
+from models import ScoreForms
 from models import GameHistoryForm
 from utils import get_by_urlsafe, check_placement
 
