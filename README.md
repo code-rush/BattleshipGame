@@ -74,6 +74,11 @@ The user who places ships on their ships board is being played by the opponent.
 Enjoy!
 
 
+## Score Counts:
+Score is stored as win percentage which is calculated per user on their wins divided by
+total number of games played. The Users are ranked by the win percentage in descending order.
+
+
 ##Files Included:
  - api.py: Contains endpoints and game playing logic.
  - app.yaml: App configuration.
@@ -158,7 +163,7 @@ Enjoy!
     - Returns: GameForm with current game state.
     - Description: Returns the current state of a game.
     
- - **place_ships_on_board**
+ - **place_ships**
  	- Path: 'game/{urlsafe_game_key}/place_ships'
  	- Method: PUT
  	- Parameters: user_a, ship_1_a, ship_2_a, ship_3_a, ship_4_a, user_b, ship_1_b,
@@ -174,9 +179,9 @@ Enjoy!
     - Parameters: urlsafe_game_key, user_name, move
     - Returns: GameForm with new game state.
     - Description: Accepts a move and returns the updated state of the game.
-    A move is a number from 0 - 99 corresponding to one of the 100 possible
+    A move is a number from 0 - 99 corresponding to one of the 100 possible tile
     positions on the board.
-    If this causes a game to end, the game will be deleted.
+    If a move causes a game to end declaring a winner, the will be deleted.
 
  - **get_user_games**
     - Path: 'user/games'
@@ -205,5 +210,15 @@ Enjoy!
     - Path: 'game/{urlsafe_game_key}/{user_name}/history'
     - Method: GET
     - Parameters: urlsafe_game_key
-    - Returns: StringMessage containing history
-    - Description: Returns current state of users playboard.
+    - Returns: GameHistoryForm containing history
+    - Description: Returns history of moves the user made in the game with the 
+    corresponding output, the current state of game and the winner if game 
+    is completed.
+
+- **get_user**
+    - Path: 'user/{user_name}'
+    - Method: GET
+    - Parameters: user_name
+    - Returns: UserForm with all user details
+    - Description: Returns requested user with all user information and personal 
+    win counts and total games played.
