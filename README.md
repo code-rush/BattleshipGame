@@ -68,6 +68,9 @@ beacuse if they are placed there, part of the ship will be outside the board.
 4. After placing ships, use __make_move__ endpoint to play game. 
 5. When you place a move, 'O' will be used to show if you hit the ship else 'X' will be showed.
 
+__Note:__ Total there are four boards. There are two boards to place ships and two boards to play. 
+The user who places ships on their ships board is being played by the opponent.
+
 Enjoy!
 
 
@@ -78,6 +81,43 @@ Enjoy!
  - main.py: Handler for taskqueue handler.
  - models.py: Entity and message definitions including helper methods.
  - utils.py: Helper function for retrieving ndb.Models by urlsafe Key string.
+
+##Models Included:
+ - **User**
+    - Stores unique user_name and email address.
+    - Also keeps track of wins and games_played.
+    
+ - **Game**
+    - Stores unique game states. Associated with User models via KeyProperties
+    user_a and user_b.
+
+ - **Score**
+    - Records completed games. Associated with Users model via KeyProperty as
+    well.
+
+    
+##Forms Included:
+ - **GameForm**
+    - Representation of a Game's state (urlsafe_key, user_a_shipsboard, 
+    user_b_shipsboard, user_a, user_b, game_over, winner, user_a_playboard,
+    user_b_playboard, next_move).
+ - **NewGameForm**
+    - Used to create a new game (user_a, user_b)
+ - **MakeMoveForm**
+    - Inbound make move form (user_name, move).
+ - **PlaceShipsForm**
+    - Used to place ships on users ships board.
+ - **ScoreForm**
+    - Representation of a completed game's Score (date, winner, loser).
+ - **ScoreForms**
+    - Multiple ScoreForm container.
+ - **UserForm**
+    - Representation of User. Includes winning percentage
+ - **UserForms**
+    - Container for one or more UserForm.
+ - **StringMessage**
+    - General purpose String container.
+
 
 ##Endpoints Included:
  - **create_user**
@@ -130,7 +170,7 @@ Enjoy!
 
  - **make_move**
     - Path: 'game/{urlsafe_game_key}/move'
-    - Method: POST
+    - Method: PUT
     - Parameters: urlsafe_game_key, user_name, move
     - Returns: GameForm with new game state.
     - Description: Accepts a move and returns the updated state of the game.
@@ -167,29 +207,3 @@ Enjoy!
     - Parameters: urlsafe_game_key
     - Returns: StringMessage containing history
     - Description: Returns current state of users playboard.
-
-
-##Models Included:
- - **User**
-    - Stores unique user_name and email address.
-    - Also keeps track of wins and games_played.
-    
- - **Game**
-    - Stores unique game states. Associated with User models via KeyProperties
-    user_a and user_b.
-    
-##Forms Included:
- - **GameForm**
-    - Representation of a Game's state (urlsafe_key, user_a_shipsboard, 
-    user_b_shipsboard, user_a, user_b, game_over, winner, user_a_playboard,
-    user_b_playboard, next_move).
- - **NewGameForm**
-    - Used to create a new game (user_a, user_b)
- - **MakeMoveForm**
-    - Inbound make move form (user_name, move).
- - **UserForm**
-    - Representation of User. Includes winning percentage
- - **UserForms**
-    - Container for one or more UserForm.
- - **StringMessage**
-    - General purpose String container.
