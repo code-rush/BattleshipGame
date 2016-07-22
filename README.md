@@ -122,6 +122,8 @@ total number of games played. The Users are ranked by the win percentage in desc
     - Container for one or more UserForm.
  - **StringMessage**
     - General purpose String container.
+ - **GameHistoryForm**
+    - Container for user's game history.
 
 
 ##Endpoints Included:

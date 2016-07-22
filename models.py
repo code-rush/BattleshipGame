@@ -197,7 +197,7 @@ class StringMessage(messages.Message):
     message = messages.StringField(1, required=True)
 
 class GameHistoryForm(messages.Message):
-    """Returns History for the game"""
+    """Container for user's game history"""
     game_status = messages.StringField(1, required=True)
     winner = messages.StringField(3)
     game_history = messages.StringField(2, required=True)
