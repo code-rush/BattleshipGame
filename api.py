@@ -88,17 +88,17 @@ class BattleShipAPI(remote.Service):
         global SHIPSA
         global SHIPSB
 
-        # position_ship_1_a = request.ship_1_a
-        # placement_allowed = check_placement(position_ship_1_a,1)
-        # if not placement_allowed:
-        #     raise endpoints.BadRequestException(
-        #             'Invalid placement! Your ship placement cannot be outside the board')
+        position_ship_1_a = request.ship_1_a
+        placement_allowed = check_placement(position_ship_1_a,1)
+        if not placement_allowed:
+            raise endpoints.BadRequestException(
+                    'Invalid placement! Your ship placement cannot be outside the board')
 
-        # ship1a = [position_ship_1_a + 20,
-        #           position_ship_1_a + 10,
-        #           position_ship_1_a,
-        #           position_ship_1_a - 10,
-        #           position_ship_1_a - 20]
+        ship1a = [position_ship_1_a + 20,
+                  position_ship_1_a + 10,
+                  position_ship_1_a,
+                  position_ship_1_a - 10,
+                  position_ship_1_a - 20]
 
         position_ship_2_a = request.ship_2_a
         placement_allowed = check_placement(position_ship_2_a,2)
@@ -111,88 +111,88 @@ class BattleShipAPI(remote.Service):
                   position_ship_2_a + 1]
 
 
-        # position_ship_3_a = request.ship_3_a
-        # placement_allowed = check_placement(position_ship_3_a,3)
-        # if not placement_allowed:
-        #     raise endpoints.BadRequestException(
-        #             'Invalid placement! Your ship placement cannot be outside the board')
+        position_ship_3_a = request.ship_3_a
+        placement_allowed = check_placement(position_ship_3_a,3)
+        if not placement_allowed:
+            raise endpoints.BadRequestException(
+                    'Invalid placement! Your ship placement cannot be outside the board')
 
         
-        # ship3a = [position_ship_3_a + 10,
-        #           position_ship_3_a - 1,
-        #           position_ship_3_a,
-        #           position_ship_3_a - 10]
+        ship3a = [position_ship_3_a + 10,
+                  position_ship_3_a - 1,
+                  position_ship_3_a,
+                  position_ship_3_a - 10]
 
 
-        # position_ship_4_a = request.ship_4_a
-        # placement_allowed = check_placement(position_ship_4_a,4)
-        # if not placement_allowed:
-        #     raise endpoints.BadRequestException(
-        #             'Invalid placement! Your ship placement cannot be outside the board')
+        position_ship_4_a = request.ship_4_a
+        placement_allowed = check_placement(position_ship_4_a,4)
+        if not placement_allowed:
+            raise endpoints.BadRequestException(
+                    'Invalid placement! Your ship placement cannot be outside the board')
 
 
-        # ship4a = [position_ship_4_a + 9,
-        #           position_ship_4_a - 1,
-        #           position_ship_4_a,
-        #           position_ship_4_a - 10]
+        ship4a = [position_ship_4_a + 9,
+                  position_ship_4_a - 1,
+                  position_ship_4_a,
+                  position_ship_4_a - 10]
 
 
-        # for i in ship1a:
-        #     if i > 99 or i < 0:
-        #         raise endpoints.BadRequestException(
-        #                 'Invalid placement! Your part of the ship is outside the board')
-        #     if i in ship2a or i in ship3a or i in ship4a:
-        #         raise endpoints.BadRequestException(
-        #                 'Invalid placement! Your ships overlap')
-        #     game.user_a_shipsboard[i] = 'A1'
-        #     SHIPSA.append(ship1a)
+        for i in ship1a:
+            if i > 99 or i < 0:
+                raise endpoints.BadRequestException(
+                        'Invalid placement! Your part of the ship is outside the board')
+            if i in ship2a or i in ship3a or i in ship4a:
+                raise endpoints.BadRequestException(
+                        'Invalid placement! Your ships overlap')
+            game.user_a_shipsboard[i] = 'A1'
+            SHIPSA.append(ship1a)
 
 
         for i in ship2a:
             if i > 99 or i < 0:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your part of the ship is outside the board')
-            # if i in ship1a or i in ship4a or i in ship3a:
-            #     raise endpoints.BadRequestException(
-            #             'Invalid placement! Your ships overlap')
+            if i in ship1a or i in ship4a or i in ship3a:
+                raise endpoints.BadRequestException(
+                        'Invalid placement! Your ships overlap')
             game.user_a_shipsboard[i] = 'A2'
             SHIPSA.append(ship2a)
 
 
-        # for i in ship3a:
-        #     if i > 99 or i < 0:
-        #         raise endpoints.BadRequestException(
-        #                 'Invalid placement! Your part of the ship is outside the board')
-        #     if i in ship1a or i in ship2a or i in ship4a:
-        #         raise endpoints.BadRequestException(
-        #                 'Invalid placement! Your ships overlap')
-        #     game.user_a_shipsboard[i] = 'A3'
-        #     SHIPSA.append(ship3a)
+        for i in ship3a:
+            if i > 99 or i < 0:
+                raise endpoints.BadRequestException(
+                        'Invalid placement! Your part of the ship is outside the board')
+            if i in ship1a or i in ship2a or i in ship4a:
+                raise endpoints.BadRequestException(
+                        'Invalid placement! Your ships overlap')
+            game.user_a_shipsboard[i] = 'A3'
+            SHIPSA.append(ship3a)
         
 
-        # for i in ship4a:
-        #     if i > 99 or i < 0:
-        #         raise endpoints.BadRequestException(
-        #                 'Invalid placement! Your part of the ship is outside the board')
-        #     if i in ship1a or i in ship2a or i in ship3a:
-        #         raise endpoints.BadRequestException(
-        #                 'Invalid placement! Your ships overlap')
-        #     game.user_a_shipsboard[i] = 'A4'
-        #     SHIPSA.append(ship4a)
+        for i in ship4a:
+            if i > 99 or i < 0:
+                raise endpoints.BadRequestException(
+                        'Invalid placement! Your part of the ship is outside the board')
+            if i in ship1a or i in ship2a or i in ship3a:
+                raise endpoints.BadRequestException(
+                        'Invalid placement! Your ships overlap')
+            game.user_a_shipsboard[i] = 'A4'
+            SHIPSA.append(ship4a)
 
 
 
-        # position_ship_1_b = request.ship_1_b
-        # placement_allowed = check_placement(position_ship_1_b,1)
-        # if not placement_allowed:
-        #     raise endpoints.BadRequestException(
-        #             'Invalid placement! Your ship placement cannot be outside the board')
+        position_ship_1_b = request.ship_1_b
+        placement_allowed = check_placement(position_ship_1_b,1)
+        if not placement_allowed:
+            raise endpoints.BadRequestException(
+                    'Invalid placement! Your ship placement cannot be outside the board')
 
-        # ship1b = [position_ship_1_b + 20,
-        #           position_ship_1_b + 10,
-        #           position_ship_1_b,
-        #           position_ship_1_b - 10,
-        #           position_ship_1_b - 20]
+        ship1b = [position_ship_1_b + 20,
+                  position_ship_1_b + 10,
+                  position_ship_1_b,
+                  position_ship_1_b - 10,
+                  position_ship_1_b - 20]
 
 
         position_ship_2_b = request.ship_2_b
@@ -207,39 +207,39 @@ class BattleShipAPI(remote.Service):
                   position_ship_2_b + 1]
 
 
-        # position_ship_3_b = request.ship_3_b
-        # placement_allowed = check_placement(position_ship_3_b,3)
-        # if not placement_allowed:
-        #     raise endpoints.BadRequestException(
-        #             'Invalid placement! Your ship placement cannot be outside the board')
+        position_ship_3_b = request.ship_3_b
+        placement_allowed = check_placement(position_ship_3_b,3)
+        if not placement_allowed:
+            raise endpoints.BadRequestException(
+                    'Invalid placement! Your ship placement cannot be outside the board')
 
-        # ship3b = [position_ship_3_b + 10,
-        #           position_ship_3_b - 1,
-        #           position_ship_3_b,
-        #           position_ship_3_b - 10]
-
-
-        # position_ship_4_b = request.ship_4_b
-        # placement_allowed = check_placement(position_ship_4_b,4)
-        # if not placement_allowed:
-        #     raise endpoints.BadRequestException(
-        #             'Invalid placement! Your ship placement cannot be outside the board')
-
-        # ship4b = [position_ship_4_b + 9,
-        #           position_ship_4_b - 1,
-        #           position_ship_4_b,
-        #           position_ship_4_b - 10]
+        ship3b = [position_ship_3_b + 10,
+                  position_ship_3_b - 1,
+                  position_ship_3_b,
+                  position_ship_3_b - 10]
 
 
-        # for i in ship1b:
-        #     if i > 99 or i < 0:
-        #         raise endpoints.BadRequestException(
-        #                 'Invalid placement! Your part of the ship is outside the board')
-        #     if i in ship2b or i in ship3b or i in ship4b:
-        #         raise endpoints.BadRequestException(
-        #                 'Invalid placement! Your ships overlap')
-        #     game.user_b_shipsboard[i] = 'B1'
-        #     SHIPSB.append(ship1b)
+        position_ship_4_b = request.ship_4_b
+        placement_allowed = check_placement(position_ship_4_b,4)
+        if not placement_allowed:
+            raise endpoints.BadRequestException(
+                    'Invalid placement! Your ship placement cannot be outside the board')
+
+        ship4b = [position_ship_4_b + 9,
+                  position_ship_4_b - 1,
+                  position_ship_4_b,
+                  position_ship_4_b - 10]
+
+
+        for i in ship1b:
+            if i > 99 or i < 0:
+                raise endpoints.BadRequestException(
+                        'Invalid placement! Your part of the ship is outside the board')
+            if i in ship2b or i in ship3b or i in ship4b:
+                raise endpoints.BadRequestException(
+                        'Invalid placement! Your ships overlap')
+            game.user_b_shipsboard[i] = 'B1'
+            SHIPSB.append(ship1b)
 
 
         
@@ -247,33 +247,33 @@ class BattleShipAPI(remote.Service):
             if i > 99 or i < 0:
                 raise endpoints.BadRequestException(
                         'Invalid placement! Your part of the ship is outside the board')
-            # if i in ship1b or i in ship4b or i in ship3b:
-            #     raise endpoints.BadRequestException(
-            #             'Invalid placement! Your ships overlap')
+            if i in ship1b or i in ship4b or i in ship3b:
+                raise endpoints.BadRequestException(
+                        'Invalid placement! Your ships overlap')
             game.user_b_shipsboard[i] = 'B2'
             SHIPSB.append(ship2b)
 
 
-        # for i in ship3b:
-        #     if i > 99 or i < 0:
-        #         raise endpoints.BadRequestException(
-        #                 'Invalid placement! Your part of the ship is outside the board')
-        #     if i in ship1b or i in ship2b or i in ship4b:
-        #         raise endpoints.BadRequestException(
-        #                 'Invalid placement! Your ships overlap')
-        #     game.user_b_shipsboard[i] = 'B3'
-        #     SHIPSB.append(ship3b)
+        for i in ship3b:
+            if i > 99 or i < 0:
+                raise endpoints.BadRequestException(
+                        'Invalid placement! Your part of the ship is outside the board')
+            if i in ship1b or i in ship2b or i in ship4b:
+                raise endpoints.BadRequestException(
+                        'Invalid placement! Your ships overlap')
+            game.user_b_shipsboard[i] = 'B3'
+            SHIPSB.append(ship3b)
         
 
-        # for i in ship4b:
-        #     if i > 99 or i < 0:
-        #         raise endpoints.BadRequestException(
-        #                 'Invalid placement! Your part of the ship is outside the board')
-        #     if i in ship1b or i in ship2b or i in ship3b:
-        #         raise endpoints.BadRequestException(
-        #                 'Invalid placement! Your ships overlap')
-        #     game.user_b_shipsboard[i] = 'B4'
-        #     SHIPSB.append(ship4b)
+        for i in ship4b:
+            if i > 99 or i < 0:
+                raise endpoints.BadRequestException(
+                        'Invalid placement! Your part of the ship is outside the board')
+            if i in ship1b or i in ship2b or i in ship3b:
+                raise endpoints.BadRequestException(
+                        'Invalid placement! Your ships overlap')
+            game.user_b_shipsboard[i] = 'B4'
+            SHIPSB.append(ship4b)
 
         if game.game_start:
             raise endpoints.BadRequestException(
@@ -399,11 +399,11 @@ class BattleShipAPI(remote.Service):
                 counta += 1
         
 
-        if countb == 3:
+        if countb == 16:
             winner = game.user_b
             loser = game.user_a
             game.end_game(winner)
-        elif counta == 3:
+        elif counta == 16:
             winner = game.user_a
             loser = game.user_b
             game.end_game(winner)
