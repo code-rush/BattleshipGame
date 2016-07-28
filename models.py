@@ -168,15 +168,15 @@ class NewGameForm(messages.Message):
 class PlaceShipsForm(messages.Message):
     """Used by users to place ships on their board"""
     user_a = messages.StringField(1, required=True)
-    # ship_1_a = messages.IntegerField(2, required=True)
-    ship_2_a = messages.IntegerField(2, required=True)
-    # ship_3_a = messages.IntegerField(4, required=True)
-    # ship_4_a = messages.IntegerField(5, required=True)
-    user_b = messages.StringField(3, required=True)
-    # ship_1_b = messages.IntegerField(7, required=True)
-    ship_2_b = messages.IntegerField(4, required=True)
-    # ship_3_b = messages.IntegerField(9, required=True)
-    # ship_4_b = messages.IntegerField(10, required=True)
+    ship_1_a = messages.IntegerField(2, required=True)
+    ship_2_a = messages.IntegerField(3, required=True)
+    ship_3_a = messages.IntegerField(4, required=True)
+    ship_4_a = messages.IntegerField(5, required=True)
+    user_b = messages.StringField(6, required=True)
+    ship_1_b = messages.IntegerField(7, required=True)
+    ship_2_b = messages.IntegerField(8, required=True)
+    ship_3_b = messages.IntegerField(9, required=True)
+    ship_4_b = messages.IntegerField(10, required=True)
 
 
 class MakeMoveForm(messages.Message):
